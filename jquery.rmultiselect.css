@@ -1,0 +1,27 @@
+/*
+* jQuery RMultiSelect
+*
+* Copyright 2011, Renan A. Marks
+* Dual licensed under the MIT or GPL Version 2 licenses.
+*/
+
+.rmultiselect .notSelected, .rmultiselect .selected  {
+    float: left;
+    width: 45%;
+}
+.rmultiselect .notSelected select, .rmultiselect .selected select {
+    width: 100%;
+    height: 150px;
+}
+.rmultiselect .buttons {
+    float: left;
+    margin: 10px;
+    width: 4%;
+    text-align: center;
+}
+.rmultiselect .buttons button {
+    width: 30px !important;
+    height: 30px !important;
+    margin-bottom: 2px;
+    padding: 5px;
+}
