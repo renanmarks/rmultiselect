@@ -12,85 +12,123 @@
             NotSelectedTitle: 'Items',
             SelectedTitle: 'Selected Items'
         };
+
         var opts = $.extend(defaults, options);
 
-        var $this = $(this);
+        $(this).each(function (i,e) {
+            var $this = $(e);
 
-        /* The hidden select witch will be sent by POST */
-        var selectedPOST = $this.clone();
+            /* The hidden select witch will be sent by POST */
+            var selectedPOST = $this.clone();
 
-        /* The action buttons */
-        var add = $('<button type="button" />').addClass('button add').html('&gt;');
-        var addAll = $('<button type="button" />').addClass('button addAll').html('&gt;&gt;');
-        var remove = $('<button type="button" />').addClass('button remove').html('&lt;');
-        var removeAll = $('<button type="button" />').addClass('button removeAll').html('&lt;&lt;');
-        
-        /* The multiselects */
-        var notSelectedElement = $('<select name="#" multiple="multiple" />')
+            /* The action buttons */
+            var add = $('<button type="button" />').addClass('button add').css('width', '30px !important').html('&gt;');
+            var addAll = $('<button type="button" />').addClass('button addAll').css('width', '30px !important').html('&gt;&gt;');
+            var remove = $('<button type="button" />').addClass('button remove').css('width', '30px !important').html('&lt;');
+            var removeAll = $('<button type="button" />').addClass('button removeAll').css('width', '30px !important').html('&lt;&lt;');
+
+            /* The multiselects */
+            var notSelectedElement = $('<select name="#" multiple="multiple" />')
             .append(selectedPOST.children(':not(:selected)').clone());
 
-        var selectedElement = $('<select name="#" multiple="multiple" />')
+            var selectedElement = $('<select name="#" multiple="multiple" />')
             .append(selectedPOST.children(':selected').clone());
 
-        /* The sub containers */
-        var notSelectedContainer = $('<div class="notSelected" />');
-        var selectedContainer = $('<div class="selected" />');
-        var buttonContainer = $('<div/>').addClass('buttons');
+            var notSelectedSearchElement = $('<div class="search"> <input type="text" /> </div>');
+            var selectedSearchElement = $('<div class="search"> <input type="text" /> </div>');
 
-        /* Assemble everything up */
-        buttonContainer.append(add).append(addAll).append(removeAll).append(remove);
-        notSelectedContainer.append('<div class="header">' + opts.NotSelectedTitle + '</div>').append(notSelectedElement);
-        selectedContainer.append('<div class="header">' + opts.SelectedTitle + '</div>').append(selectedElement);
+            /* The sub containers */
+            var notSelectedContainer = $('<div/>').addClass('notSelected');
+            var selectedContainer = $('<div/>').addClass('selected');
+            var buttonContainer = $('<div/>').addClass('buttons');
 
-        /* Create the main container */
-        var container = $('<div class="rmultiselect" />');
+            /* Assemble everything up */
+            buttonContainer.append(add).append(addAll).append(removeAll).append(remove);
 
-        if (opts.Title != '')
-            container.append('<div class="header">'+ opts.Title +'</div>');
+            notSelectedContainer.append('<div class="header">' + opts.NotSelectedTitle + '</div>')
+            //.append(notSelectedSearchElement)
+            .append(notSelectedElement);
 
-        /* Generate the main container */
-        container.append(notSelectedContainer).append(buttonContainer).append(selectedContainer).append($(selectedPOST).hide());
+            selectedContainer.append('<div class="header">' + opts.SelectedTitle + '</div>')
+            //.append(selectedSearchElement)
+            .append(selectedElement);
 
-        /* Put the new widget in the place of the old multiselect */
-        $this.replaceWith(container);
+            /* Create the main container */
+            var container = $('<div/>').addClass('rmultiselect');
 
-        /**** Actions to (de)select items in the visible and hidden multiselects ****/
-        remove.click(function () {
-            console.log('remove');
-            var selectedItems = selectedElement.children(':selected');
-            notSelectedElement.append($(selectedItems));
+            if (opts.Title != '')
+                container.append('<div class="header">' + opts.Title + '</div>');
 
-            selectedItems.each(function (i) {
-                var value = $(selectedItems[i]).attr('value');
-                selectedPOST.children('option[value="' + value + '"]').attr('selected', false);
+            /* Generate the main container */
+            container.append(notSelectedContainer).append(buttonContainer).append(selectedContainer).append($(selectedPOST).hide());
+
+            /* Put the new widget in the place of the old multiselect */
+            $this.replaceWith(container);
+
+            /**** Actions to search an item ****/
+            $('input', notSelectedSearchElement).keyup(function (event) {
+                if (event.which == 13) {
+                    return false;
+                }
+
+                if ($(this).val().length == 0) {
+                    $(notSelectedElement).children().show();
+                } else {
+                    var query = ":contains('" + $(this).val() + "')";
+                    $(notSelectedElement).children().not(query).hide();
+                    $(notSelectedElement).children(query).show();
+                }
             });
-        });
 
-        add.click(function () {
-            console.log('add');
-            var notSelectedItems = notSelectedElement.children(':selected');
-            selectedElement.append($(notSelectedItems));
+            $('input', selectedSearchElement).keyup(function (event) {
+                if (event.which == 13) {
+                    return false;
+                }
 
-            notSelectedItems.each(function (i) {
-                var value = $(notSelectedItems[i]).attr('value');
-                selectedPOST.children('option[value="' + value + '"]').attr('selected', true);
+                if ($(this).val().length == 0) {
+                    $(selectedElement).children().show();
+                } else {
+                    var query = ":contains('" + $(this).val() + "')";
+                    $(selectedElement).children().not(query).hide();
+                    $(selectedElement).children(query).show();
+                }
             });
-        });
 
-        removeAll.click(function () {
-            console.log('removeAll');
-            notSelectedElement.append(selectedElement.children());
+            /**** Actions to (de)select items in the visible and hidden multiselects ****/
+            remove.click(function () {
+                var selectedItems = selectedElement.children(':selected');
+                notSelectedElement.append($(selectedItems));
 
-            selectedPOST.children(':selected').attr('selected', false);
-            selectedElement.empty();
-        });
+                selectedItems.each(function (i) {
+                    var value = $(selectedItems[i]).attr('value');
+                    selectedPOST.children('option[value="' + value + '"]').attr('selected', false);
+                });
+            });
 
-        addAll.click(function () {
-            console.log('addAll');
-            selectedElement.append(notSelectedElement.children());
+            add.click(function () {
+                var notSelectedItems = notSelectedElement.children(':selected');
+                selectedElement.append($(notSelectedItems));
 
-            selectedPOST.children(':not(:selected)').attr('selected', true);
-            notSelectedElement.empty();
+                notSelectedItems.each(function (i) {
+                    var value = $(notSelectedItems[i]).attr('value');
+                    selectedPOST.children('option[value="' + value + '"]').attr('selected', true);
+                });
+            });
+
+            removeAll.click(function () {
+                notSelectedElement.append(selectedElement.children());
+
+                selectedPOST.children(':selected').attr('selected', false);
+                selectedElement.empty();
+            });
+
+            addAll.click(function () {
+                selectedElement.append(notSelectedElement.children());
+
+                selectedPOST.children(':not(:selected)').attr('selected', true);
+                notSelectedElement.empty();
+            });
         });
     }
 })(jQuery);
+
