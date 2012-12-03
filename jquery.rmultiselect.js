@@ -21,11 +21,11 @@
             /* The hidden select witch will be sent by POST */
             var selectedPOST = $this.clone();
 
-            /* The action buttons */
-            var add = $('<button type="button" />').addClass('button add').css('width', '30px !important').html('&gt;');
-            var addAll = $('<button type="button" />').addClass('button addAll').css('width', '30px !important').html('&gt;&gt;');
-            var remove = $('<button type="button" />').addClass('button remove').css('width', '30px !important').html('&lt;');
-            var removeAll = $('<button type="button" />').addClass('button removeAll').css('width', '30px !important').html('&lt;&lt;');
+        /* The action buttons */
+        var add = $('<button type="button" />').addClass('btn add').css('width', '30px !important').html('<i class="icon-chevron-right"></i>');
+        var addAll = $('<button type="button" />').addClass('btn addAll').css('width', '30px !important').html('<i class="icon-forward"></i>');
+        var remove = $('<button type="button" />').addClass('btn remove').css('width', '30px !important').html('<i class="icon-chevron-left"></i>');
+        var removeAll = $('<button type="button" />').addClass('btn removeAll').css('width', '30px !important').html('<i class="icon-backward"></i>');
 
             /* The multiselects */
             var notSelectedElement = $('<select name="#" multiple="multiple" />')
